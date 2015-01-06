@@ -9,12 +9,6 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
-import javax.smartcardio.Card;
-import javax.smartcardio.CardException;
-import javax.smartcardio.CardTerminal;
-import javax.smartcardio.CardTerminals;
-import javax.smartcardio.TerminalFactory;
-
 import de.persosim.driver.connector.pcsc.PcscCallData;
 import de.persosim.driver.connector.pcsc.PcscCallResult;
 import de.persosim.driver.connector.pcsc.PcscConstants;
@@ -96,39 +90,6 @@ public class NativeDriverConnector implements PcscConstants, PcscListener {
 				throw new IOException("The waiting for the communication thread was interrupted");
 			}
 		}
-		
-//		try {
-//			Thread.sleep(40000);
-//		} catch (InterruptedException e) {
-//		}
-//		
-
-		
-		//check that the reader is present
-		TerminalFactory factory = TerminalFactory.getDefault();
-	    CardTerminals terminalList = factory.terminals();
-	        try {
-				for (CardTerminal currentTerminal : terminalList.list()) {
-					System.out.println("CardTerminal "+ currentTerminal.getName());
-					boolean b = currentTerminal.waitForCardPresent(500);
-					System.out.println("WaitForCardPresent: " + b);
-					Card card = currentTerminal.connect("*");
-
-					try {
-						Thread.sleep(5000);
-					} catch (InterruptedException e) {
-					}
-					
-					card.disconnect(true);
-				}
-				
-			} catch (CardException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} 
-		
-		
-		
 		
 	}
 	
@@ -378,10 +339,10 @@ public class NativeDriverConnector implements PcscConstants, PcscListener {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					return new SimplePcscCallResult(PcscConstants.IFD_ERROR_POWER_ACTION);
 				}
 			}
-			return new SimplePcscCallResult(
-					PcscConstants.IFD_ERROR_POWER_ACTION);
+			return new SimplePcscCallResult(IFD_SUCCESS); //already powered down
 		} else {
 			if (IFD_POWER_UP.equals(action)) {
 				try {
